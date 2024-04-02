@@ -1,0 +1,79 @@
+openapi: 3.0.1
+info:
+  title: Card creation API
+  version: 1.0.0
+servers:
+  - url: https://api.something.com/v1
+
+paths:
+  /api/v1/card-request:
+    post:
+      tags:
+        - new-card-request
+      summary: Create new card
+      requestBody:
+        content:
+          '*/*':
+            schema:
+              $ref: '#/components/schemas/NewCardRequest'
+        required: true
+      responses:
+        201:
+          description: New card request successfully created.
+        400:
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        404:
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  schemas:
+    NewCardRequest:
+      title: Card request
+      type: object
+      properties:
+        firstName:
+          type: string
+        lastName:
+          type: string
+        status:
+          type: string
+        oib:
+          type: string
+    ErrorResponse:
+      type: object
+      properties:
+        code:
+          type: string
+          description: Optional error code for reporting purposes
+        id:
+          type: string
+          description: Unique identifier for audit purposes
+        description:
+          type: string
+          description: The description of the error
+    Response:
+      title: Response
+      type: object
+      properties:
+        message:
+          type: string
