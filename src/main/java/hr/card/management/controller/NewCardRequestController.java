@@ -1,5 +1,6 @@
 package hr.card.management.controller;
 
+import hr.card.management.domain.annotations.ValidationCheck;
 import hr.card.management.infrastructure.model.NewCardRequest;
 import hr.card.management.infrastructure.repository.NewCardRequestRepository;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +19,7 @@ public class NewCardRequestController {
         return newCardRequestRepository.findNewCardRequestByOib(oib).orElse(null);
     }
 
+    @ValidationCheck
     @PostMapping("")
     public NewCardRequest createNewCardRequest(@RequestBody NewCardRequest newCardRequest) {
         return newCardRequestRepository.save(newCardRequest);
