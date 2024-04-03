@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html th:fragment="layout (content)" xmlns:th="http://www.thymeleaf.org"
+>
+<body>
+
+<nav th:fragment="navigation" class="navbar navbar-expand-md fixed-top navbar-dark bg-dark">
+    <a class="navbar-brand" href="#" th:href="@{/home}">Card Request API</a>
+
+    <div class="collapse navbar-collapse" id="navbarsExampleDefault">
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item">
+                <a class="nav-link" href="#" th:href="@{/home}">Home</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#" th:href="@{/card-requests}">Card Request</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#" th:href="@{/find-by-oib}">Find by OIB</a>
+            </li>
+        </ul>
+    </div>
+</nav>
+
+</body>
+</html>

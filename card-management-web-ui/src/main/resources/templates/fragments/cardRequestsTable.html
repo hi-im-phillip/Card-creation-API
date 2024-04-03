@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<table th:fragment="cardRequestsTable" class="table">
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Status</th>
+        <th>First Name</th>
+        <th>Last Name</th>
+        <th>OIB</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="cardRequest : ${cardRequests}">
+        <td th:text="${cardRequest.id}"></td>
+        <td th:text="${cardRequest.status}"></td>
+        <td th:text="${cardRequest.firstName}"></td>
+        <td th:text="${cardRequest.lastName}"></td>
+        <td th:text="${cardRequest.oib}"></td>
+        <td>
+            <a href="#" th:href="@{'/card-requests/delete/'+${cardRequest.id}}" type="button"
+               class="btn btn-outline-danger">Delete</a>
+        </td>
+    </tr>
+    </tbody>
+</table>
+
+</body>
+</html>

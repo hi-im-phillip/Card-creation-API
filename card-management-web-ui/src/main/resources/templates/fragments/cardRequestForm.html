@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<form th:fragment="cardRequestForm" method="post" action="#" th:action="@{/card-requests/create}"
+      th:object="${cardRequest}">
+
+    <div class="row">
+        <div class="col-md-6 mb-3">
+            <label for="firstName">First name</label>
+            <input type="text" class="form-control" id="firstName" th:field="*{firstName}"/>
+        </div>
+        <div class="col-md-6 mb-3">
+            <label for="lastName">Last name</label>
+            <input type="text" class="form-control" id="lastName" th:field="*{lastName}"/>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-4 mb-3">
+            <label for="oib">OIB</label>
+            <input type="text" class="form-control" id="oib" th:field="*{oib}"/>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-4 mb-3">
+            <label for="status">Status</label>
+            <select class="form-control" id="status" name="status">
+                <option value="IN_PROGRESS">IN PROGRESS</option>
+            </select>
+        </div>
+    </div>
+
+
+    <div class="row">
+        <div class="col-md-1">
+            <a href="#" th:href="@{/card-requests}" class="btn btn-outline-secondary">Cancel</a>
+        </div>
+        <div class="col-md-2">
+            <button class="btn btn-primary btn-block" type="submit">Add</button>
+        </div>
+    </div>
+</form>
+
+</body>
+</html>

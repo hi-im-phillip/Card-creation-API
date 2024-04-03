@@ -1,0 +1,28 @@
+<!doctype html>
+<html th:replace="~{layouts/main :: layout(~{::main})}" xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<main role="main">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12 py-4">
+
+                <form action="/find-by-oib" method="get" id="searchForm">
+                    <div class="col-md-6 mb-3">
+                        <label for="oib">OIB</label>
+                        <input type="text" class="form-control" id="oib" name="oib"/>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <button type="submit" class="btn btn-primary">Search</button>
+                    </div>
+                </form>
+
+                <h2>Card Request</h2>
+                <div th:replace="fragments/cardRequestsTable :: cardRequestsTable"></div>
+
+            </div>
+        </div>
+    </div>
+</main>
+</body>
+</html>
