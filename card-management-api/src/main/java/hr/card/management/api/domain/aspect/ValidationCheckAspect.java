@@ -3,22 +3,29 @@ package hr.card.management.api.domain.aspect;
 import hr.card.management.api.domain.exceptions.ValidationViolationException;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validator;
+import lombok.RequiredArgsConstructor;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.aspectj.lang.annotation.Pointcut;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
 import java.util.Set;
 
 @Aspect
 @Component
+@RequiredArgsConstructor
+@ConditionalOnProperty(value = "validation-check.enabled", havingValue = "true")
 public class ValidationCheckAspect {
 
-    @Autowired
-    private Validator validator;
+    private final Validator validator;
 
-    @Around("@annotation(hr.card.management.api.domain.annotations.ValidationCheck)")
+    @Pointcut("@annotation(hr.card.management.api.domain.annotations.ValidationCheck)")
+    public void validationCheckPointcut() {
+    }
+
+    @Around(value = "validationCheckPointcut()")
     public Object validate(ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
         if (proceedingJoinPoint.getArgs().length == 0) {
             return proceedingJoinPoint.proceed();

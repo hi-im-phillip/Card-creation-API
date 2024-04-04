@@ -3,7 +3,7 @@ The Card Management System is a multi-module Spring Boot project designed to man
 
 ## Table of Contents
 
-[Technologies Used](#technologies-used) | [Modules](#modules) | [Usage](#usage) | [License](#license) | [Additional Notes](#additional-notes) | [Task description](#task-description)
+[Technologies Used](#technologies-used) | [Modules](#modules) | [Usage](#usage) | [Swagger Integration](#swagger-integration) | [License](#license) | [Additional Notes](#additional-notes) | [Task description](#task-description)
 
 <hr style="border:2px solid gray"> </hr>
 
@@ -21,6 +21,7 @@ The Card Management System is a multi-module Spring Boot project designed to man
 - Maven: Build automation tool for managing dependencies and building Java projects.
 - Jakarta Validation: API for defining and enforcing constraints on Java objects.
 - Lombok: Library for reducing boilerplate code in Java applications.
+- Swagger: API documentation tool for designing, building, and documenting APIs.
 
 <hr style="border:2px solid gray"> </hr>
 
@@ -63,9 +64,21 @@ The Card Management System is a multi-module Spring Boot project designed to man
 
 <hr style="border:2px solid gray"> </hr>
 
+## Swagger Integration
+
+Swagger UI is integrated into the project using the `springdoc-openapi-starter-webmvc-ui` dependency. To access the
+Swagger UI and explore the API endpoints, follow these steps:
+
+1. Ensure all modules are running.
+2. Navigate to `http://localhost:<port>/swagger-ui.html` in your web browser, where `<port>` is the port your
+   application is running on.
+
+<hr style="border:2px solid gray"> </hr>
+
 ## License
 
-This project is licensed under the GNU GENERAL PUBLIC LICENSE Version 3. See the LICENSE file for details.
+This project is licensed under the GNU GENERAL PUBLIC LICENSE Version 3. See
+the [LICENSE](https://www.gnu.org/licenses/gpl-3.0.en.html) file for details.
 
 <hr style="border:2px solid gray"> </hr>
 

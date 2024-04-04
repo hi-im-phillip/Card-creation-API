@@ -3,6 +3,7 @@ package hr.card.management.api.controller.service;
 import hr.card.management.api.controller.factory.CardRequestApiFactory;
 import hr.card.management.api.controller.model.CardRequestCommand;
 import hr.card.management.api.controller.model.CardRequestDto;
+import hr.card.management.api.domain.annotations.PerformanceLogger;
 import hr.card.management.api.infrastructure.model.CardRequest;
 import hr.card.management.api.infrastructure.repository.CardRequestRepository;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +19,7 @@ public class CardRequestApiServiceImpl implements CardRequestApiService {
     private final CardRequestRepository cardRequestRepository;
 
     @Override
+    @PerformanceLogger
     public CardRequestDto createCardRequest(CardRequestCommand command) {
         return CardRequestApiFactory.toCardRequestDto(cardRequestRepository.save(CardRequestApiFactory.toCardRequest(command)));
     }
@@ -28,6 +30,7 @@ public class CardRequestApiServiceImpl implements CardRequestApiService {
     }
 
     @Override
+    @PerformanceLogger
     public List<CardRequestDto> findAll() {
         List<CardRequest> cardRequestList = new ArrayList<>();
         cardRequestRepository.findAll().forEach(cardRequestList::add);
@@ -35,6 +38,7 @@ public class CardRequestApiServiceImpl implements CardRequestApiService {
     }
 
     @Override
+    @PerformanceLogger
     public CardRequestDto findCardRequestsByOib(String oib) {
         return cardRequestRepository.findNewCardRequestByOib(oib).map(CardRequestApiFactory::toCardRequestDto).orElse(null);
     }

@@ -11,6 +11,7 @@ import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 
@@ -20,6 +21,7 @@ import java.lang.reflect.Method;
 @Component
 @RequiredArgsConstructor
 @Slf4j
+@ConditionalOnProperty(value = "kafka-sender.enabled", havingValue = "true")
 public class KafkaSenderAspect {
 
     public static final String PENDING = "PENDING";
