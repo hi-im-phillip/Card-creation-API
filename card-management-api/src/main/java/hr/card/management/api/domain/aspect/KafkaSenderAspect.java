@@ -2,9 +2,9 @@ package hr.card.management.api.domain.aspect;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import hr.card.management.api.controller.model.CardRequestDto;
 import hr.card.management.api.domain.annotations.KafkaSender;
 import hr.card.management.api.domain.exceptions.KafkaSenderIllegalArgumentException;
-import hr.card.management.api.infrastructure.model.CardRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
@@ -38,7 +38,7 @@ public class KafkaSenderAspect {
             throw new KafkaSenderIllegalArgumentException("KafkaSender annotation must have a topic");
         }
         String topic = kafkaSenderAnnotation.topic();
-        if (result instanceof CardRequest cardRequest && isPending((cardRequest))) {
+        if (result instanceof CardRequestDto cardRequest && isPending((cardRequest))) {
             try {
                 String jsonResult = objectMapper.writeValueAsString(result);
                 log.info("Sending to Kafka topic '{}': {}", topic, jsonResult);
@@ -53,7 +53,7 @@ public class KafkaSenderAspect {
         return ((org.aspectj.lang.reflect.MethodSignature) joinPoint.getSignature()).getMethod();
     }
 
-    private boolean isPending(CardRequest cardRequest) {
+    private boolean isPending(CardRequestDto cardRequest) {
         return PENDING.equals(cardRequest.getStatus());
     }
 }

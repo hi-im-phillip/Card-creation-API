@@ -5,7 +5,7 @@ import org.springframework.data.repository.CrudRepository;
 
 import java.util.Optional;
 
-public interface NewCardRequestRepository extends CrudRepository<CardRequest, Long> {
+public interface CardRequestRepository extends CrudRepository<CardRequest, Long> {
 
     Optional<CardRequest> findNewCardRequestByOib(String oib);
 }

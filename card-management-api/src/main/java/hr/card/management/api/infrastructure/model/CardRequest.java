@@ -12,6 +12,7 @@ import lombok.*;
 @Getter
 @Setter
 @Data
+@Builder
 public class CardRequest {
 
     @Id

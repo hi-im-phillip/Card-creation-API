@@ -1,7 +1,8 @@
-package hr.card.management.web.ui.model;
+package hr.card.management.api.controller.model;
 
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -9,7 +10,8 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class CardRequestCommand {
+@Builder
+public class CardRequestDto {
 
     private Long id;
     private String firstName;

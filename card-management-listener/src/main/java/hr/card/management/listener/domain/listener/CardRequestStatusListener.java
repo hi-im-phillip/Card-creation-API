@@ -1,8 +1,10 @@
 package hr.card.management.listener.domain.listener;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import hr.card.management.listener.api.factory.CardRequestApiFactory;
+import hr.card.management.listener.api.model.CardRequestCommand;
+import hr.card.management.listener.api.model.CardRequestDto;
 import hr.card.management.listener.api.service.ApiService;
-import hr.card.management.listener.domain.model.CardRequestDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.annotation.KafkaListener;
@@ -16,7 +18,7 @@ import java.io.IOException;
 @Slf4j
 public class CardRequestStatusListener {
 
-    private final ApiService<CardRequestDto, Long> apiService;
+    private final ApiService<CardRequestDto, Long, CardRequestCommand> apiService;
     private final ObjectMapper objectMapper;
     private final KafkaTemplate<String, String> kafkaTemplate;
 
@@ -28,7 +30,7 @@ public class CardRequestStatusListener {
 
             if (existingCardRequest != null) {
                 existingCardRequest.setStatus("PROCESSED");
-                CardRequestDto updatedCardRequest = apiService.save(existingCardRequest);
+                CardRequestDto updatedCardRequest = apiService.save(CardRequestApiFactory.toCardRequestCommand(existingCardRequest));
                 kafkaTemplate.send("card-request-processed-topic", "Card request with ID " + updatedCardRequest.getId() + " processed successfully");
             } else {
                 log.warn("Card request with ID " + cardRequest.getId() + " not found");
