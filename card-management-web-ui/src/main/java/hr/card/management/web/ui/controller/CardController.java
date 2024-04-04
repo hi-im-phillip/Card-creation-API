@@ -2,6 +2,7 @@ package hr.card.management.web.ui.controller;
 
 import hr.card.management.web.ui.model.CardRequestCommand;
 import hr.card.management.web.ui.model.CardRequestDto;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,12 +16,13 @@ import java.util.List;
 import java.util.Objects;
 
 @Controller
+@RequiredArgsConstructor
 public class CardController {
 
     @Value("${card.management.api.url}")
     private String backendUrl;
 
-    private final RestTemplate restTemplate = new RestTemplate();
+    private final RestTemplate restTemplate;
 
 
     @GetMapping("/card-requests")

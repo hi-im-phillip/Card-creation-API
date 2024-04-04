@@ -53,6 +53,14 @@
             <artifactId>hibernate-validator</artifactId>
             <version>8.0.1.Final</version>
         </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.springframework.kafka/spring-kafka -->
+        <dependency>
+            <groupId>org.springframework.kafka</groupId>
+            <artifactId>spring-kafka</artifactId>
+            <version>3.0.15</version>
+        </dependency>
+
     </dependencies>
 
     <build>
@@ -67,6 +75,9 @@
                         </goals>
                     </execution>
                 </executions>
+                <configuration>
+                    <mainClass>hr.card.management.api.Application</mainClass>
+                </configuration>
             </plugin>
         </plugins>
     </build>

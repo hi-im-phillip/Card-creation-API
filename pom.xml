@@ -19,6 +19,7 @@
     <modules>
         <module>card-management-api</module>
         <module>card-management-web-ui</module>
+        <module>card-management-listener</module>
     </modules>
 
     <dependencyManagement>

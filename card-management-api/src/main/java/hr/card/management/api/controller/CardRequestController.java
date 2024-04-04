@@ -1,5 +1,6 @@
 package hr.card.management.api.controller;
 
+import hr.card.management.api.domain.annotations.KafkaSender;
 import hr.card.management.api.domain.annotations.ValidationCheck;
 import hr.card.management.api.infrastructure.model.CardRequest;
 import hr.card.management.api.infrastructure.repository.NewCardRequestRepository;
@@ -12,9 +13,17 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/new-card-request")
 @RequiredArgsConstructor
-public class NewCardRequestController {
+public class CardRequestController {
 
     private final NewCardRequestRepository newCardRequestRepository;
+
+
+    private static final String CARD_REQUEST_TOPIC = "card-request-topic";
+    
+    @GetMapping("/{id}")
+    public CardRequest findNewCardRequestById(@PathVariable Long id) {
+        return newCardRequestRepository.findById(id).orElse(null);
+    }
 
     @GetMapping("")
     public List<CardRequest> findAll() {
@@ -27,6 +36,7 @@ public class NewCardRequestController {
     }
 
     @ValidationCheck
+    @KafkaSender(topic = CARD_REQUEST_TOPIC)
     @PostMapping("")
     public CardRequest createNewCardRequest(@RequestBody CardRequest cardRequest) {
         return newCardRequestRepository.save(cardRequest);
