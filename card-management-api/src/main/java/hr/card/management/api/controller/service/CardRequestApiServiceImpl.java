@@ -3,6 +3,7 @@ package hr.card.management.api.controller.service;
 import hr.card.management.api.controller.factory.CardRequestApiFactory;
 import hr.card.management.api.controller.model.CardRequestCommand;
 import hr.card.management.api.controller.model.CardRequestDto;
+import hr.card.management.api.domain.annotations.Cacheable;
 import hr.card.management.api.domain.annotations.PerformanceLogger;
 import hr.card.management.api.infrastructure.model.CardRequest;
 import hr.card.management.api.infrastructure.repository.CardRequestRepository;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+
 
 @RequiredArgsConstructor
 @Service
@@ -24,7 +26,9 @@ public class CardRequestApiServiceImpl implements CardRequestApiService {
         return CardRequestApiFactory.toCardRequestDto(cardRequestRepository.save(CardRequestApiFactory.toCardRequest(command)));
     }
 
+
     @Override
+    @Cacheable
     public CardRequestDto findCardRequestById(Long id) {
         return cardRequestRepository.findById(id).map(CardRequestApiFactory::toCardRequestDto).orElse(null);
     }
@@ -39,6 +43,7 @@ public class CardRequestApiServiceImpl implements CardRequestApiService {
 
     @Override
     @PerformanceLogger
+    @Cacheable
     public CardRequestDto findCardRequestsByOib(String oib) {
         return cardRequestRepository.findNewCardRequestByOib(oib).map(CardRequestApiFactory::toCardRequestDto).orElse(null);
     }
