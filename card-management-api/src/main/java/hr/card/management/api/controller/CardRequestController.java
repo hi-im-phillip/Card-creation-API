@@ -1,7 +1,9 @@
 package hr.card.management.api.controller;
 
 import hr.card.management.api.controller.model.CardRequestCommand;
+import hr.card.management.api.controller.model.CardRequestCommandByOIB;
 import hr.card.management.api.controller.model.CardRequestDto;
+import hr.card.management.api.controller.model.ResponseBaseDto;
 import hr.card.management.api.controller.service.CardRequestApiService;
 import hr.card.management.api.domain.annotations.KafkaSender;
 import hr.card.management.api.domain.annotations.ValidationCheck;
@@ -33,8 +35,8 @@ public class CardRequestController {
     }
 
     @Operation(summary = "Find card requests by OIB")
-    @GetMapping("/oib/{oib}")
-    public CardRequestDto findNewCardRequestsByOib(@PathVariable String oib) {
+    @PostMapping("/oib")
+    public ResponseBaseDto findNewCardRequestsByOib(@RequestBody CardRequestCommandByOIB oib) {
         return apiService.findCardRequestsByOib(oib);
     }
 

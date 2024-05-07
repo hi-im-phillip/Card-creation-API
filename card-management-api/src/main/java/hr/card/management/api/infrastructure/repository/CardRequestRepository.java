@@ -3,9 +3,6 @@ package hr.card.management.api.infrastructure.repository;
 import hr.card.management.api.infrastructure.model.CardRequest;
 import org.springframework.data.repository.CrudRepository;
 
-import java.util.Optional;
+public interface CardRequestRepository extends CrudRepository<CardRequest, Long>, CardRequestSearchRepository {
 
-public interface CardRequestRepository extends CrudRepository<CardRequest, Long> {
-
-    Optional<CardRequest> findNewCardRequestByOib(String oib);
 }

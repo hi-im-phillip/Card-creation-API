@@ -2,12 +2,18 @@ package hr.card.management.api.controller.service;
 
 import hr.card.management.api.controller.factory.CardRequestApiFactory;
 import hr.card.management.api.controller.model.CardRequestCommand;
+import hr.card.management.api.controller.model.CardRequestCommandByOIB;
 import hr.card.management.api.controller.model.CardRequestDto;
+import hr.card.management.api.controller.model.ResponseBaseDto;
 import hr.card.management.api.domain.annotations.Cacheable;
 import hr.card.management.api.domain.annotations.PerformanceLogger;
 import hr.card.management.api.infrastructure.model.CardRequest;
+import hr.card.management.api.infrastructure.model.criteria.CardRequestSearchCriteria;
 import hr.card.management.api.infrastructure.repository.CardRequestRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -44,8 +50,22 @@ public class CardRequestApiServiceImpl implements CardRequestApiService {
     @Override
     @PerformanceLogger
     @Cacheable
-    public CardRequestDto findCardRequestsByOib(String oib) {
-        return cardRequestRepository.findNewCardRequestByOib(oib).map(CardRequestApiFactory::toCardRequestDto).orElse(null);
+    public ResponseBaseDto findCardRequestsByOib(CardRequestCommandByOIB command) {
+
+        var cardRequestSearchCriteria = CardRequestSearchCriteria
+                .builder()
+                .oib(command.getOib())
+                .build();
+
+        Pageable pageable = PageRequest.of(command.getPage(), command.getPerPage());
+        Page<CardRequest> cardRequests = cardRequestRepository.findEntitiesBySearchCriteria(cardRequestSearchCriteria, pageable);
+
+        return new ResponseBaseDto(
+                cardRequests.getContent()
+                        .stream()
+                        .map(CardRequestApiFactory::toCardRequestDto)
+                        .toList(),
+                (int) cardRequests.getTotalElements());
     }
 
     @Override

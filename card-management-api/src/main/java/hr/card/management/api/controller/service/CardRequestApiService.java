@@ -1,7 +1,9 @@
 package hr.card.management.api.controller.service;
 
 import hr.card.management.api.controller.model.CardRequestCommand;
+import hr.card.management.api.controller.model.CardRequestCommandByOIB;
 import hr.card.management.api.controller.model.CardRequestDto;
+import hr.card.management.api.controller.model.ResponseBaseDto;
 
 import java.util.List;
 
@@ -13,7 +15,7 @@ public interface CardRequestApiService {
 
     List<CardRequestDto> findAll();
 
-    CardRequestDto findCardRequestsByOib(String oib);
+    ResponseBaseDto findCardRequestsByOib(CardRequestCommandByOIB oib);
 
     void deleteCardRequest(Long id);
 }

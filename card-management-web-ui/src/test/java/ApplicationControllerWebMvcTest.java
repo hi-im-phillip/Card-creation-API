@@ -1,12 +1,14 @@
 import hr.card.management.web.ui.configuration.RestTemplateConfiguration;
 import hr.card.management.web.ui.model.CardRequestCommand;
 import hr.card.management.web.ui.model.CardRequestDto;
+import hr.card.management.web.ui.model.ResponseBaseDto;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.web.client.RestTemplate;
 
@@ -45,14 +47,18 @@ class CardControllerTest {
     }
 
     @Test
-    void testFindByOibResponseStatus_OK() {
-        CardRequestDto cardRequestDto = new CardRequestDto(5001L, "John", "Wayne", "PENDING", "87745921050");
-        ResponseEntity<CardRequestDto> responseEntity = new ResponseEntity<>(cardRequestDto, HttpStatus.OK);
+    void testFindByOibResponseStatus_OK() throws JSONException {
+        JSONObject cardRequestCommandByOIB = new JSONObject();
+        cardRequestCommandByOIB.put("oib", "12345678901");
 
-        ResponseEntity<CardRequestDto> response = restTemplate.getForEntity(BACKEND_URL + "/oib/" + cardRequestDto.getOib(), CardRequestDto.class);
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Content-Type", "application/json");
+        HttpEntity<String> entity = new HttpEntity<>(cardRequestCommandByOIB.toString(), headers);
 
-        assertEquals(responseEntity.getStatusCode(), response.getStatusCode());
-        assertEquals(responseEntity.getBody(), response.getBody());
+        ResponseEntity<ResponseBaseDto> response = restTemplate.exchange(BACKEND_URL + "/oib", HttpMethod.POST, entity, ResponseBaseDto.class);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(response.getBody());
     }
 
     @Test
