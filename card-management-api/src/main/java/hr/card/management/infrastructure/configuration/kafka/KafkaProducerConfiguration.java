@@ -1,5 +1,6 @@
 package hr.card.management.infrastructure.configuration.kafka;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.springframework.beans.factory.annotation.Value;
@@ -15,6 +16,7 @@ import java.util.Map;
 
 @Configuration
 @ConditionalOnProperty(value = "kafka-sender.enabled", havingValue = "true")
+@Slf4j
 public class KafkaProducerConfiguration {
 
     @Value(value = "${spring.kafka.bootstrap-servers}")
@@ -22,6 +24,7 @@ public class KafkaProducerConfiguration {
 
     @Bean
     public ProducerFactory<String, String> producerFactory() {
+        log.info("KafkaProducerConfiguration::producerFactory Creating ProducerFactory");
         Map<String, Object> configProps = new HashMap<>();
         configProps.put(
                 ProducerConfig.BOOTSTRAP_SERVERS_CONFIG,

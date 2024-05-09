@@ -1,0 +1,3 @@
+# Application Listeners
+org.springframework.boot.env.EnvironmentPostProcessor=\
+  hr.card.management.infrastructure.processor.CustomEnvironmentPostProcessor

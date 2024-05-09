@@ -1,5 +1,6 @@
 package hr.card.management.infrastructure.configuration.kafka;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.admin.AdminClientConfig;
 import org.apache.kafka.clients.admin.NewTopic;
 import org.springframework.beans.factory.annotation.Value;
@@ -13,6 +14,7 @@ import java.util.Map;
 
 @Configuration
 @ConditionalOnProperty(value = "kafka-sender.enabled", havingValue = "true")
+@Slf4j
 public class KafkaTopicConfiguration {
 
     @Value(value = "${spring.kafka.bootstrap-servers}")
@@ -20,6 +22,7 @@ public class KafkaTopicConfiguration {
 
     @Bean
     public KafkaAdmin kafkaAdmin() {
+        log.info("KafkaTopicConfiguration::kafkaAdmin Creating KafkaAdmin");
         Map<String, Object> configs = new HashMap<>();
         configs.put(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapAddress);
         return new KafkaAdmin(configs);
