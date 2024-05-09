@@ -87,7 +87,7 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <mainClass>hr.card.management.api.Application</mainClass>
+                    <mainClass>hr.card.management.Application</mainClass>
                 </configuration>
             </plugin>
         </plugins>
