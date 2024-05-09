@@ -2,10 +2,10 @@ package hr.card.management.web.ui.controller;
 
 import hr.card.management.web.ui.model.CardRequestCommand;
 import hr.card.management.web.ui.model.CardRequestDto;
+import hr.card.management.web.ui.model.ResponseBaseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
@@ -41,16 +41,24 @@ public class CardController {
     @GetMapping("/find-by-oib")
     public ModelAndView findByOib(@RequestParam(required = false) String oib) {
 
-        ResponseEntity<CardRequestDto> responseEntity = restTemplate.getForEntity(backendUrl + "/oib/" + oib, CardRequestDto.class);
+        CardRequestCommand cardRequestCommandByOIB = new CardRequestCommand();
+        cardRequestCommandByOIB.setOib(oib);
 
-        if (responseEntity.getStatusCode() == HttpStatus.OK) {
-            if (responseEntity.getBody() == null) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Content-Type", "application/json");
+        HttpEntity<CardRequestCommand> entity = new HttpEntity<>(cardRequestCommandByOIB, headers);
+
+        ResponseEntity<ResponseBaseDto> response = restTemplate.exchange(backendUrl + "/oib", HttpMethod.POST, entity, ResponseBaseDto.class);
+
+        if (response.getStatusCode() == HttpStatus.OK) {
+            if (response.getBody() == null || response.getBody().getItems() == null) {
                 return new ModelAndView("find-by-oib");
+            } else {
+                List<CardRequestDto> cardRequestDtoList = (List<CardRequestDto>) Objects.requireNonNull(response.getBody().getItems());
+                return new ModelAndView("find-by-oib", "cardRequests", cardRequestDtoList);
             }
-            List<CardRequestDto> cardRequestDtoList = List.of(Objects.requireNonNull(responseEntity.getBody()));
-            return new ModelAndView("find-by-oib", "cardRequests", cardRequestDtoList);
         } else
-            throw new IllegalStateException(String.format("Unable to list cardRequest, received status %s", responseEntity.getStatusCode()));
+            throw new IllegalStateException(String.format("Unable to list cardRequest, received status %s", response.getStatusCode()));
 
     }
 

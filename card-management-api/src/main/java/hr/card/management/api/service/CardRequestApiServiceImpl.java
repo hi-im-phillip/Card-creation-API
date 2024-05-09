@@ -7,6 +7,7 @@ import hr.card.management.api.model.CardRequestDto;
 import hr.card.management.api.model.ResponseBaseDto;
 import hr.card.management.domain.annotations.Cacheable;
 import hr.card.management.domain.annotations.PerformanceLogger;
+import hr.card.management.domain.annotations.ValidationCheck;
 import hr.card.management.infrastructure.model.CardRequest;
 import hr.card.management.infrastructure.model.criteria.CardRequestSearchCriteria;
 import hr.card.management.infrastructure.repository.CardRequestRepository;
@@ -28,6 +29,7 @@ public class CardRequestApiServiceImpl implements CardRequestApiService {
 
     @Override
     @PerformanceLogger
+    @ValidationCheck
     public CardRequestDto createCardRequest(CardRequestCommand command) {
         return CardRequestApiFactory.toCardRequestDto(cardRequestRepository.save(CardRequestApiFactory.toCardRequest(command)));
     }
@@ -49,12 +51,11 @@ public class CardRequestApiServiceImpl implements CardRequestApiService {
 
     @Override
     @PerformanceLogger
-    @Cacheable
     public ResponseBaseDto findCardRequestsByOib(CardRequestCommandByOIB command) {
 
         var cardRequestSearchCriteria = CardRequestSearchCriteria
                 .builder()
-                .oib(command.getOib())
+                .oib(command.getOib() == null ? "" : command.getOib().trim())
                 .build();
 
         Pageable pageable = PageRequest.of(command.getPage(), command.getPerPage());

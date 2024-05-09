@@ -39,20 +39,8 @@ public class CardRequestSearchRepositoryImpl implements CardRequestSearchReposit
         CriteriaQuery<CardRequest> cq = cb.createQuery(CardRequest.class);
 
         Root<CardRequest> root = cq.from(CardRequest.class);
-        for (Field field : searchCriteria.getClass().getDeclaredFields()) {
-            field.setAccessible(true);
-            if (!cardRequestFields.contains(field.getName())) {
-                throw new IllegalArgumentException("Field " + field.getName() + " does not exist in CardRequest");
-            }
-            try {
-                Object value = field.get(searchCriteria);
-                if (value != null) {
-                    cq.where(cb.equal(root.get(field.getName()), value));
-                }
-            } catch (IllegalAccessException e) {
-                throw new IllegalSearchCriteriaAccessException("Failed to access field value in search criteria", e);
-            }
-        }
+        where(searchCriteria, cb, cq, root);
+       
         pageable.getSort().forEach(order -> {
             if (order.isAscending()) {
                 cq.orderBy(cb.asc(root.get(order.getProperty())));
@@ -68,9 +56,32 @@ public class CardRequestSearchRepositoryImpl implements CardRequestSearchReposit
         List<CardRequest> content = query.getResultList();
 
         CriteriaQuery<Long> countQuery = cb.createQuery(Long.class);
-        countQuery.select(cb.count(countQuery.from(CardRequest.class)));
+        Root<CardRequest> countRoot = countQuery.from(CardRequest.class);
+        countQuery.select(cb.count(countRoot));
+        where(searchCriteria, cb, countQuery, countRoot);
+
         Long total = entityManager.createQuery(countQuery).getSingleResult();
 
         return new PageImpl<>(content, pageable, total);
+    }
+
+    private void where(SearchCriteria searchCriteria, CriteriaBuilder cb, CriteriaQuery<?> criteriaQuery, Root<?> root) {
+
+        for (Field field : searchCriteria.getClass().getDeclaredFields()) {
+            field.setAccessible(true);
+            if (!cardRequestFields.contains(field.getName())) {
+                throw new IllegalArgumentException("Field " + field.getName() + " does not exist in CardRequest");
+            }
+            try {
+                Object value = field.get(searchCriteria);
+                if (value instanceof String) {
+                    criteriaQuery.where(cb.like(root.get(field.getName()), "%" + value + "%"));
+                } else {
+                    criteriaQuery.where(cb.equal(root.get(field.getName()), value));
+                }
+            } catch (IllegalAccessException e) {
+                throw new IllegalSearchCriteriaAccessException("Failed to access field value in search criteria", e);
+            }
+        }
     }
 }
