@@ -2,109 +2,76 @@ package hr.card.management;
 
 import hr.card.management.api.model.CardRequestDto;
 import hr.card.management.api.service.CardRequestApiServiceImpl;
-import hr.card.management.domain.annotations.Cacheable;
-import hr.card.management.domain.aspect.CacheableAspect;
-import org.aspectj.lang.ProceedingJoinPoint;
-import org.aspectj.lang.reflect.MethodSignature;
+import hr.card.management.infrastructure.model.CardRequest;
+import hr.card.management.infrastructure.repository.CardRequestRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.ContextConfiguration;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @SpringBootTest
-@ExtendWith(SpringExtension.class)
+@ContextConfiguration(classes = ApiApplication.class)
 public class CacheableAspectTest {
 
-    @Mock
-    private ProceedingJoinPoint proceedingJoinPoint;
-    @Mock
-    private MethodSignature methodSignature;
-    @Mock
-    private CacheableAspect cacheableAspect;
+    @Autowired
+    private CardRequestApiServiceImpl cardRequestApiService;
 
+    @MockBean
+    private CardRequestRepository cardRequestRepository;
 
     @BeforeEach
-    public void setUp() throws Throwable {
-
-        // Create a CacheableAspect instance
-        cacheableAspect = new CacheableAspect();
-
-        // Create a mock ProceedingJoinPoint
-        proceedingJoinPoint = Mockito.mock(ProceedingJoinPoint.class);
-
-        methodSignature = Mockito.mock(MethodSignature.class);
-        when(proceedingJoinPoint.getSignature()).thenReturn(methodSignature);
-
-        // Define the method signature for the mocked MethodSignature
-        when(methodSignature.toShortString()).thenReturn("findCardRequestById(Long)");
-        when(methodSignature.toLongString()).thenReturn("CardRequestDto hr.card.management.api.controller.service.CardRequestApiServiceImpl.findCardRequestById(Long)");
-        when(methodSignature.getMethod()).thenReturn(CardRequestApiServiceImpl.class.getMethod("findCardRequestById", Long.class));
-
-        when(proceedingJoinPoint.proceed()).thenReturn(CardRequestDto.builder().id(1337L));
+    public void setUp() {
+        Mockito.reset(cardRequestRepository);
     }
 
     @Test
-    public void testCacheHit_2() throws Throwable {
+    public void testFindCardRequestById_Caching() {
+        Long testId = 1L;
+        CardRequest cardRequest = new CardRequest();
+        cardRequest.setId(testId);
+        CardRequestDto cardRequestDto = new CardRequestDto();
+        cardRequestDto.setId(testId);
 
-        when(proceedingJoinPoint.proceed()).thenReturn(new CardRequestDto());
+        when(cardRequestRepository.findById(testId)).thenReturn(Optional.of(cardRequest));
 
-        // Invoke the method under test twice
-        Object result1 = cacheableAspect.checkCache(proceedingJoinPoint);
-        Object result2 = cacheableAspect.checkCache(proceedingJoinPoint);
+        // First call should cache the result
+        CardRequestDto result1 = cardRequestApiService.findCardRequestById(testId);
+        assertNotNull(result1);
+        assertEquals(result1.getId(), testId);
 
-        // Verify that the same result object is returned from cache
-        assertEquals(result1, result2);
+        // Second call should hit the cache
+        CardRequestDto result2 = cardRequestApiService.findCardRequestById(testId);
+        assertNotNull(result2);
+        assertEquals(result2.getId(), testId);
 
-        // Verify that the method is only invoked once
-        verify(proceedingJoinPoint, times(1)).proceed();
+        // Verify that repository was called only once
+        verify(cardRequestRepository, times(1)).findById(testId);
     }
-
 
     @Test
-    public void testCacheMiss() throws Throwable {
+    public void testFindCardRequestById_NullValueNotCached() {
+        Long testId = 2L;
 
-        // Create a mock ProceedingJoinPoint for the second method call
-        ProceedingJoinPoint differentProceedingJoinPoint = Mockito.mock(ProceedingJoinPoint.class);
-        MethodSignature differentMethodSignature = Mockito.mock(MethodSignature.class);
+        when(cardRequestRepository.findById(testId)).thenReturn(Optional.empty());
 
-        when(differentProceedingJoinPoint.getSignature()).thenReturn(differentMethodSignature);
-        when(differentMethodSignature.toShortString()).thenReturn("findCustomerById(Long)");
-        when(differentMethodSignature.toLongString()).thenReturn("String hr.card.management.api.CustomerApiServiceImpl.findCustomerById(Long)");
-        when(differentMethodSignature.getMethod()).thenReturn(MockCustomerServiceImpl.class.getMethod("findCustomerById", Long.class));
+        // First call should return null and not cache the result
+        CardRequestDto result1 = cardRequestApiService.findCardRequestById(testId);
+        assertNull(result1);
 
-        when(differentProceedingJoinPoint.proceed()).thenReturn(CardRequestDto.builder().id(420L));
+        // Second call should again return null and not cache the result
+        CardRequestDto result2 = cardRequestApiService.findCardRequestById(testId);
+        assertNull(result2);
 
-        // Invoke the first method under test (should result in cache miss)
-        Object result1 = cacheableAspect.checkCache(proceedingJoinPoint);
-
-        // Verify that the method is invoked once for the first call
-        verify(proceedingJoinPoint, times(1)).proceed();
-
-        // Invoke the second method under test (should result in cache miss)
-        Object result2 = cacheableAspect.checkCache(differentProceedingJoinPoint);
-
-        // Verify that the method is invoked once for the second call
-        verify(differentProceedingJoinPoint, times(1)).proceed();
-
-        // Assert that the results of the two calls are not equal
-        assertNotEquals(result1, result2);
-    }
-
-
-    private static class MockCustomerServiceImpl {
-
-        @Cacheable
-        public String findCustomerById(Long id) {
-            // Mocked implementation for findCustomerById
-            return "Mocked Customer with ID: " + id;
-        }
+        // Verify that repository was called twice
+        verify(cardRequestRepository, times(2)).findById(testId);
     }
 }
 
