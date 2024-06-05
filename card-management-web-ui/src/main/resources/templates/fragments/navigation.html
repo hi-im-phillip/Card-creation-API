@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html th:fragment="layout (content)" xmlns:th="http://www.thymeleaf.org"
->
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <body>
 
 <nav th:fragment="navigation" class="navbar navbar-expand-md fixed-top navbar-dark bg-dark">
@@ -18,6 +18,18 @@
                 <a class="nav-link" href="#" th:href="@{/find-by-oib}">Find by OIB</a>
             </li>
         </ul>
+
+        <div sec:authorize="!isAuthenticated()">
+            <a href="#" th:href="@{/login}">Login</a>
+        </div>
+
+        <div sec:authorize="isAuthenticated()">
+            <a href="javascript: document.logoutForm.submit()">Logout</a>
+
+            <form name="logoutForm" th:action="@{/logout}" method="post" th:hidden="true">
+                <input hidden type="submit" value="Sign Out"/>
+            </form>
+        </div>
     </div>
 </nav>
 
